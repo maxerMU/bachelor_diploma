@@ -1,3 +1,7 @@
+planes_dataset/
+src/test_tensors/
+src/train_tensors/
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
