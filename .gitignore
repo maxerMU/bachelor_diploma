@@ -1,6 +1,6 @@
 planes_dataset/
-src/test_tensors/
-src/train_tensors/
+planes_recogniser/test_tensors/
+planes_recogniser/train_tensors/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
