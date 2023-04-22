@@ -1,6 +1,7 @@
 planes_dataset/
 planes_recogniser/test_tensors/
 planes_recogniser/train_tensors/
+__pycache__/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
