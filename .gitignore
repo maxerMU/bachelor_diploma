@@ -3,6 +3,30 @@ planes_recogniser/test_tensors/
 planes_recogniser/train_tensors/
 __pycache__/
 
+# Python virtual environment
+venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.pyc
+
+# Other
+*.log
+*.swp
+.DS_Store
+Thumbs.db
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
