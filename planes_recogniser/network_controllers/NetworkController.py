@@ -2,13 +2,17 @@ import torch
 import numpy as np
 
 from models.conv_network import PlanesNetwork
+from models.simple_net import simplenet
 from dataset_handler.dataset_handler import DataSetHandler
 
 from network_controllers import INetworkController
 
 class NetwrokController(INetworkController):
+    _MODEL_PATH="trained_models/simplenet.pt"
+
     def __init__(self, batchSize, learningRate):
-        self.planesNetwork = PlanesNetwork(20)
+        # self.planesNetwork = PlanesNetwork(20)
+        self.planesNetwork = simplenet(20)
         self.datasetHandler = DataSetHandler()
 
         self.batchSize = batchSize
@@ -39,6 +43,13 @@ class NetwrokController(INetworkController):
     
     def GetResults(self, xBatch):
         return self.planesNetwork.forward(xBatch).argmax(dim=1)
+    
+    def SaveModel(self):
+        torch.save(self.planesNetwork, self._MODEL_PATH)
+    
+    def LoadModel(self):
+        self.planesNetwork = torch.load(self._MODEL_PATH)
+
 
 
 if __name__ == "__main__":

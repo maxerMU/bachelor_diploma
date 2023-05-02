@@ -10,8 +10,9 @@ from dataset_handler.dataset_handler import DataSetHandler
 from network_controllers import INetworkController, NetworkController
 
 class AugmentationNetwrokController(NetworkController.NetwrokController):
-    ROTATION_ANGLE_MIN = 8
-    ROTATION_ANGLE_MAX = 20
+    ROTATION_ANGLE_MIN = 20
+    ROTATION_ANGLE_MAX = 50
+    _MODEL_PATH = "trained_models/augsimplenet.pt"
 
     def __init__(self, batchSize, learningRate):
         super(AugmentationNetwrokController, self).__init__(batchSize, learningRate)
@@ -20,7 +21,11 @@ class AugmentationNetwrokController(NetworkController.NetwrokController):
         pass
 
     def TrainEpoch(self):
+        pytorch_total_params = sum(p.numel() for p in self.planesNetwork.parameters() if p.requires_grad)
+        print(pytorch_total_params)
+        return
         order = np.random.permutation(self.datasetLen)
+        j = 0
         for startIndex in range(0, self.datasetLen, self.batchSize):
             self.optimizer.zero_grad()
 
@@ -34,9 +39,14 @@ class AugmentationNetwrokController(NetworkController.NetwrokController):
 
             # print(preds.argmax(dim=1))
             # print(lossValue)
+            print(float(startIndex) / self.datasetLen)
             lossValue.backward()
 
             self.optimizer.step()
+            return
+            j += 1
+            if j % 10 == 0:
+                self.LogTraining()
     
     def GetResults(self, xBatch):
         return self.planesNetwork.forward(xBatch).argmax(dim=1)
@@ -52,13 +62,15 @@ class AugmentationNetwrokController(NetworkController.NetwrokController):
             # image = image.rotate(angle)
             # toTensorTransform = transforms.ToTensor()
             # augTensor = toTensorTransform(image)
-            randAugTransform = transforms.RandomRotation(self.ROTATION_ANGLE_MAX)
+            randAugTransform = transforms.RandomRotation([self.ROTATION_ANGLE_MIN, self.ROTATION_ANGLE_MAX])
             augTensor1 = randAugTransform(tensor)
-            randAugTransform = transforms.RandomRotation(self.ROTATION_ANGLE_MAX * 3)
+            randAugTransform = transforms.RandomRotation([self.ROTATION_ANGLE_MIN * 3, self.ROTATION_ANGLE_MAX * 3])
             augTensor2 = randAugTransform(tensor)
+            augTensor3 = transforms.functional.adjust_brightness(tensor, 2)
+            augTensor4 = transforms.functional.gaussian_blur(tensor, kernel_size=(5,9), sigma=(0.1, 5))
 
-            xBatchAug += [tensor, augTensor1, augTensor2]
-            yBatchAug += [yBatch[i].item()] * 3
+            xBatchAug += [tensor, augTensor1, augTensor2, augTensor3, augTensor4]
+            yBatchAug += [yBatch[i].item()] * 5
         
         order = np.random.permutation(len(xBatchAug))
         xBatchAug = np.array(xBatchAug)[order]

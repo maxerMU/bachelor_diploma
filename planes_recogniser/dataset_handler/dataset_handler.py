@@ -69,6 +69,7 @@ class DataSetHandler:
                 yTest = yTest + classes
                 
         for i in range(len(xTest)):
+            # print(f"{i} -- {xTest[i]}")
             tensor: torch.Tensor = self._ConverToTensor(xTest[i])
             torch.save(tensor, f"{TEST_TENSORS_PATH}/test_{i}.pt")
 
