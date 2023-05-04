@@ -16,11 +16,19 @@ class INetworkController(ABC):
         pass
 
     @abstractmethod
-    def SaveModel(self):
+    def GetResult(self, imagePath):
         pass
 
     @abstractmethod
-    def LoadModel(self):
+    def SaveModel(self, modelPath):
+        pass
+
+    @abstractmethod
+    def LoadModel(self, modelPath):
+        pass
+
+    @abstractmethod
+    def GetAllModels(self):
         pass
 
     def TrainNetwork(self, epochs: int):
@@ -28,16 +36,17 @@ class INetworkController(ABC):
 
         for epoch in range(epochs):
             self.TrainEpoch()
-            return
+            print(f"================================== {epoch} ================================")
             self.LogTraining()
     
     def LogTraining(self):
         datasetHandler = DataSetHandler()
         #TODO
-        xBatchTest, yBatchTest = self.datasetHandler.GetTestBatch(np.random.permutation(range(datasetHandler.TestSize()))[:500])
+        testOrder = np.random.permutation(datasetHandler.TestSize())[:500]
+        xBatchTest, yBatchTest = self.datasetHandler.GetTestBatch(testOrder)
         predsTest = self.GetResults(xBatchTest)
 
-        xBatchTrain, yBatchTrain = self.datasetHandler.GetTrainingBatch(np.random.permutation(range(datasetHandler.TrainSize()))[:500])
+        xBatchTrain, yBatchTrain = self.datasetHandler.GetTrainingBatch(np.random.permutation(datasetHandler.TrainSize())[:500])
         predsTrain = self.GetResults(xBatchTrain)
 
         print("=====================================")
@@ -56,11 +65,11 @@ class INetworkController(ABC):
         trainClasses = [0] * 20
         recognizedTrain = 0
         for i in range(len(predsTrain)):
-            trainClasses[yBatchTest[i]] += 1
+            trainClasses[yBatchTrain[i]] += 1
             if predsTrain[i] == yBatchTrain[i]:
                 recognizedTrain += 1
             else:
-                trainMisses[yBatchTest[i]] += 1
+                trainMisses[yBatchTrain[i]] += 1
 
 
         print("".join(map(lambda x: "{:6}".format(x), list(range(1,21)))))

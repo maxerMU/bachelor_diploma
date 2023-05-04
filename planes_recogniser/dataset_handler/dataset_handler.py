@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 DATASET_PATH: str = "../planes_dataset"
+# TODO add base path
 TRAIN_TENSORS_PATH: str = "./train_tensors"
 TEST_TENSORS_PATH: str = "./test_tensors"
 
@@ -69,7 +70,6 @@ class DataSetHandler:
                 yTest = yTest + classes
                 
         for i in range(len(xTest)):
-            # print(f"{i} -- {xTest[i]}")
             tensor: torch.Tensor = self._ConverToTensor(xTest[i])
             torch.save(tensor, f"{TEST_TENSORS_PATH}/test_{i}.pt")
 

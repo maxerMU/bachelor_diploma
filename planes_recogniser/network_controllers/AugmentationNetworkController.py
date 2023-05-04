@@ -12,7 +12,8 @@ from network_controllers import INetworkController, NetworkController
 class AugmentationNetwrokController(NetworkController.NetwrokController):
     ROTATION_ANGLE_MIN = 20
     ROTATION_ANGLE_MAX = 50
-    _MODEL_PATH = "trained_models/augsimplenet.pt"
+    # _MODEL_PATH = "trained_models/augconvnet.pt"
+    # _MODEL_PATH = "trained_models/augsimplenet1.pt"
 
     def __init__(self, batchSize, learningRate):
         super(AugmentationNetwrokController, self).__init__(batchSize, learningRate)
@@ -21,9 +22,6 @@ class AugmentationNetwrokController(NetworkController.NetwrokController):
         pass
 
     def TrainEpoch(self):
-        pytorch_total_params = sum(p.numel() for p in self.planesNetwork.parameters() if p.requires_grad)
-        print(pytorch_total_params)
-        return
         order = np.random.permutation(self.datasetLen)
         j = 0
         for startIndex in range(0, self.datasetLen, self.batchSize):
@@ -43,13 +41,13 @@ class AugmentationNetwrokController(NetworkController.NetwrokController):
             lossValue.backward()
 
             self.optimizer.step()
-            return
+
             j += 1
-            if j % 10 == 0:
+            if j % 25 == 0:
                 self.LogTraining()
     
-    def GetResults(self, xBatch):
-        return self.planesNetwork.forward(xBatch).argmax(dim=1)
+    # def GetResults(self, xBatch):
+    #     return self.planesNetwork.forward(xBatch).argmax(dim=1)
     
     def _AugmentateBatches(self, xBatch: torch.Tensor, yBatch: torch.Tensor):
         xBatchAug = []
@@ -68,9 +66,11 @@ class AugmentationNetwrokController(NetworkController.NetwrokController):
             augTensor2 = randAugTransform(tensor)
             augTensor3 = transforms.functional.adjust_brightness(tensor, 2)
             augTensor4 = transforms.functional.gaussian_blur(tensor, kernel_size=(5,9), sigma=(0.1, 5))
+            colorJitterTransform = transforms.ColorJitter(brightness=.5, hue=.3)
+            augTensor5 = colorJitterTransform(tensor)
 
-            xBatchAug += [tensor, augTensor1, augTensor2, augTensor3, augTensor4]
-            yBatchAug += [yBatch[i].item()] * 5
+            xBatchAug += [tensor, augTensor1, augTensor2, augTensor3, augTensor4, augTensor5]
+            yBatchAug += [yBatch[i].item()] * 6
         
         order = np.random.permutation(len(xBatchAug))
         xBatchAug = np.array(xBatchAug)[order]
