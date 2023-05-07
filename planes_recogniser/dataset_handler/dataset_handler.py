@@ -1,6 +1,7 @@
 from os import walk, path, listdir
 import fnmatch
 from torchvision import transforms
+from torchvision.utils import save_image
 from PIL import Image
 import torch
 import numpy as np
@@ -12,6 +13,7 @@ TRAIN_TENSORS_PATH: str = "./train_tensors"
 TEST_TENSORS_PATH: str = "./test_tensors"
 
 class DataSetHandler:
+    _AUG_ROTATE_ANGLE = 30
     def TrainSize(self):
         files = listdir(TRAIN_TENSORS_PATH)
         return len(files) - 1 #file with y results
@@ -20,8 +22,13 @@ class DataSetHandler:
         files = listdir(TEST_TENSORS_PATH)
         return len(files) - 1 #file with y results
 
-    def GetTrainingBatch(self, batchIndexes):
-        return self._GetBatch(batchIndexes, f"{TRAIN_TENSORS_PATH}/train")
+    def GetTrainingBatch(self, batchIndexes, needAug=False):
+        xBatch, yBatch = self._GetBatch(batchIndexes, f"{TRAIN_TENSORS_PATH}/train")
+        if needAug:
+            xBatch, yBatch = self._AugmentateBatches(xBatch, yBatch)
+        
+        return xBatch, yBatch
+
 
     def GetTestBatch(self, batchIndexes):
         return self._GetBatch(batchIndexes, f"{TEST_TENSORS_PATH}/test")
@@ -115,6 +122,32 @@ class DataSetHandler:
             tensor = tensor[:-1]
 
         return tensor
+
+    def _AugmentateBatches(self, xBatch: torch.Tensor, yBatch: torch.Tensor):
+        xBatchAug = []
+        yBatchAug = []
+
+        for i, tensor in enumerate(xBatch):
+            augTensor1 = transforms.functional.rotate(tensor, self._AUG_ROTATE_ANGLE)
+            augTensor2 = transforms.functional.rotate(tensor, -self._AUG_ROTATE_ANGLE)
+            augTensor3 = transforms.functional.adjust_brightness(tensor, 1.5)
+            augTensor4 = transforms.functional.gaussian_blur(tensor, kernel_size=(5,9), sigma=3)
+            # save_image(tensor, "tensor.png")
+            # save_image(augTensor1, "augTensor1.png")
+            # save_image(augTensor2, "augTensor2.png")
+            # save_image(augTensor3, "augTensor3.png")
+            # save_image(augTensor4, "augTensor4.png")
+            # exit()
+
+            xBatchAug += [tensor, augTensor1, augTensor2, augTensor3, augTensor4]
+            yBatchAug += [yBatch[i].item()] * 5
+        
+        order = np.random.permutation(len(xBatchAug))
+        xBatchAug = np.array(xBatchAug)[order]
+        yBatchAug = np.array(yBatchAug)[order]
+
+        return torch.stack(list(xBatchAug)), torch.Tensor(list(yBatchAug)).to(torch.long)
+
  
 
 if __name__ == "__main__":

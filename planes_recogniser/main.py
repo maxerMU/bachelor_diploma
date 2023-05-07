@@ -9,11 +9,11 @@ from PyQt5.uic import loadUi
 
 from mainwindow import Ui_MainWindow
 
-from network_controllers import AugmentationNetwrokController, INetworkController
+from network_controllers import NetworkController, AugmentationNetworkController, INetworkController
 
 class Window(QMainWindow, Ui_MainWindow):
     # TODO move to ui
-    controller = AugmentationNetwrokController(100, 1e-3)
+    controller = NetworkController(100, 1e-3)
     imagePath = ""
 
     def __init__(self, parent=None):
@@ -47,7 +47,10 @@ class Window(QMainWindow, Ui_MainWindow):
 
 
     def _OnTrainModel(self):
-        pass
+        modelName = self.lineEdit.text()
+        self.controller.TrainNetwork(15)
+        self.controller.SaveModel(modelName)
+        
 
     def _OnTestImage(self):
         planeModel = self.controller.GetResult(self.imagePath).long() + 1
@@ -62,7 +65,7 @@ def test(networkController: INetworkController):
     networkController.LogTraining()
 
 if __name__ == "__main__":
-    # controller = AugmentationNetwrokController(100, 1e-3)
+    # controller = AugmentationNetworkController(100, 1e-3)
     # train(controller)
     # test(controller)
     app = QApplication(sys.argv)

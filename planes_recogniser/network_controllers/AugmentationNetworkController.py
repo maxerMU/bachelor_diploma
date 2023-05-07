@@ -9,41 +9,41 @@ from dataset_handler.dataset_handler import DataSetHandler
 
 from network_controllers import INetworkController, NetworkController
 
-class AugmentationNetwrokController(NetworkController.NetwrokController):
+class AugmentationNetworkController(NetworkController):
     ROTATION_ANGLE_MIN = 20
     ROTATION_ANGLE_MAX = 50
     # _MODEL_PATH = "trained_models/augconvnet.pt"
     # _MODEL_PATH = "trained_models/augsimplenet1.pt"
 
     def __init__(self, batchSize, learningRate):
-        super(AugmentationNetwrokController, self).__init__(batchSize, learningRate)
+        super(AugmentationNetworkController, self).__init__(batchSize, learningRate)
 
     def TrainPrepare(self):
         pass
 
     def TrainEpoch(self):
-        order = np.random.permutation(self.datasetLen)
+        order = np.random.permutation(self.m_datasetLen)
         j = 0
-        for startIndex in range(0, self.datasetLen, self.batchSize):
-            self.optimizer.zero_grad()
+        for startIndex in range(0, self.m_datasetLen, self.m_batchSize):
+            self.m_optimizer.zero_grad()
 
-            batches = self.datasetHandler.GetTrainingBatch(order[startIndex:startIndex+self.batchSize])
+            batches = self.m_datasetHandler.GetTrainingBatch(order[startIndex:startIndex+self.m_batchSize])
             xBatch: torch.Tensor = batches[0]
             yBatch: torch.Tensor = batches[1]
             xBatchAug, yBatchAug = self._AugmentateBatches(xBatch, yBatch)
 
-            preds = self.planesNetwork.forward(xBatchAug)
-            lossValue = self.loss(preds, yBatchAug)
+            preds = self.m_planesNetwork.forward(xBatchAug)
+            lossValue = self.m_loss(preds, yBatchAug)
 
             # print(preds.argmax(dim=1))
             # print(lossValue)
-            print(float(startIndex) / self.datasetLen)
+            print(float(startIndex) / self.m_datasetLen)
             lossValue.backward()
 
-            self.optimizer.step()
+            self.m_optimizer.step()
 
             j += 1
-            if j % 25 == 0:
+            if j % 1 == 0:
                 self.LogTraining()
     
     # def GetResults(self, xBatch):
@@ -77,7 +77,3 @@ class AugmentationNetwrokController(NetworkController.NetwrokController):
         yBatchAug = np.array(yBatchAug)[order]
 
         return torch.stack(list(xBatchAug)), torch.Tensor(list(yBatchAug)).to(torch.long)
-
-
-if __name__ == "__main__":
-    NetwrokController().TrainNetwork(15, 100, 1e-3)

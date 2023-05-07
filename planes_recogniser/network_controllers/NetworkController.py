@@ -10,44 +10,50 @@ from dataset_handler.dataset_handler import DataSetHandler
 
 from network_controllers import INetworkController
 
-class NetwrokController(INetworkController):
+class NetworkController(INetworkController):
     _TRAINED_MODELS_PATH = "trained_models/"
 
     def __init__(self, batchSize, learningRate):
-        # self.planesNetwork = PlanesNetwork(20)
-        self.planesNetwork = simplenet(20)
-        self.datasetHandler = DataSetHandler()
+        # self.m_planesNetwork = PlanesNetwork(20)
+        self.m_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(self.m_device)
+        self.m_planesNetwork = simplenet(20).to(self.m_device)
+        self.m_datasetHandler = DataSetHandler()
 
-        self.batchSize = batchSize
-        self.learningRate = learningRate
+        self.m_batchSize = batchSize
+        self.m_learningRate = learningRate
 
-        self.loss = torch.nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.Adam(self.planesNetwork.parameters(), lr=self.learningRate)
-        self.datasetLen = self.datasetHandler.TrainSize()
+        self.m_loss = torch.nn.CrossEntropyLoss()
+        # TODO change on ADAM
+        self.m_optimizer = torch.optim.Adam(self.m_planesNetwork.parameters(), lr=self.m_learningRate)
+        self.m_datasetLen = self.m_datasetHandler.TrainSize()
     
     def TrainPrepare(self):
         pass
 
     def TrainEpoch(self):
-        order = np.random.permutation(self.datasetLen)
-        for startIndex in range(0, self.datasetLen, self.batchSize):
-            self.optimizer.zero_grad()
+        order = np.random.permutation(self.m_datasetLen)
+        for startIndex in range(0, self.m_datasetLen, self.m_batchSize):
+            self.m_optimizer.zero_grad()
 
-            xBatch, yBatch = self.datasetHandler.GetTrainingBatch(order[startIndex:startIndex+self.batchSize])
+            # TODO rm aug
+            xBatch, yBatch = self.m_datasetHandler.GetTrainingBatch(order[startIndex:startIndex+self.m_batchSize], needAug=True)
+            xBatch.to(self.m_device)
+            yBatch.to(self.m_device)
 
-            preds = self.planesNetwork.forward(xBatch)
-            lossValue = self.loss(preds, yBatch)
+            preds = self.m_planesNetwork.forward(xBatch)
+            lossValue = self.m_loss(preds, yBatch)
 
             # print(preds.argmax(dim=1))
             # print(lossValue)
             lossValue.backward()
 
-            self.optimizer.step()
+            self.m_optimizer.step()
     
     def GetResults(self, xBatch):
-        self.planesNetwork.eval()
-        results = self.planesNetwork.forward(xBatch).argmax(dim=1)
-        self.planesNetwork.train()
+        self.m_planesNetwork.eval()
+        results = self.m_planesNetwork.forward(xBatch).argmax(dim=1)
+        self.m_planesNetwork.train()
 
         return results
     
@@ -64,10 +70,11 @@ class NetwrokController(INetworkController):
 
     
     def SaveModel(self, modelPath):
-        torch.save(self.planesNetwork, f"{self._TRAINED_MODELS_PATH}{modelPath}")
+        torch.save(self.m_planesNetwork, f"{self._TRAINED_MODELS_PATH}{modelPath}")
     
     def LoadModel(self, modelPath):
-        self.planesNetwork = torch.load(f"{self._TRAINED_MODELS_PATH}{modelPath}")
+        self.m_planesNetwork = torch.load(f"{self._TRAINED_MODELS_PATH}{modelPath}")
+        self.m_planesNetwork.to(self.m_device)
     
     def GetAllModels(self):
         models = []
@@ -80,4 +87,4 @@ class NetwrokController(INetworkController):
 
 
 if __name__ == "__main__":
-    NetwrokController().TrainNetwork(15, 100, 1e-3)
+    NetworkController().TrainNetwork(15, 100, 1e-3)
