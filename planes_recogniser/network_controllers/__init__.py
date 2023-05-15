@@ -1,3 +1,5 @@
 from .INetworkController import INetworkController
 from .NetworkController import NetworkController
 from .AugmentationNetworkController import AugmentationNetworkController
+from .SGDNetworkController import SGDNetworkController
+from .RPMSPropsNetworkController import RPMSPropsNetworkController

@@ -13,7 +13,7 @@ from network_controllers import INetworkController
 class NetworkController(INetworkController):
     _TRAINED_MODELS_PATH = "trained_models/"
 
-    def __init__(self, batchSize, learningRate):
+    def __init__(self, batchSize, learningRate, needAug=True):
         # self.m_planesNetwork = PlanesNetwork(20)
         self.m_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(self.m_device)
@@ -22,6 +22,7 @@ class NetworkController(INetworkController):
 
         self.m_batchSize = batchSize
         self.m_learningRate = learningRate
+        self.m_needAug = needAug
 
         self.m_loss = torch.nn.CrossEntropyLoss()
         # TODO change on ADAM
@@ -36,8 +37,7 @@ class NetworkController(INetworkController):
         for startIndex in range(0, self.m_datasetLen, self.m_batchSize):
             self.m_optimizer.zero_grad()
 
-            # TODO rm aug
-            xBatch, yBatch = self.m_datasetHandler.GetTrainingBatch(order[startIndex:startIndex+self.m_batchSize], needAug=True)
+            xBatch, yBatch = self.m_datasetHandler.GetTrainingBatch(order[startIndex:startIndex+self.m_batchSize], needAug=self.m_needAug)
             xBatch.to(self.m_device)
             yBatch.to(self.m_device)
 
