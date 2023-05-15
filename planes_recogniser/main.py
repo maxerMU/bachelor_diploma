@@ -24,7 +24,8 @@ class Window(QMainWindow, Ui_MainWindow):
     m_algsControllersMap = {
         "Adam": NetworkController,
         "SGD": SGDNetworkController,
-        "RMSProps": RPMSPropsNetworkController
+        "RMSProps": RPMSPropsNetworkController,
+        "SortingLoss": SortNetworkController
     }
 
     def __init__(self, parent=None):

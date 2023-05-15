@@ -15,7 +15,9 @@ class NetworkController(INetworkController):
 
     def __init__(self, batchSize, learningRate, needAug=True):
         # self.m_planesNetwork = PlanesNetwork(20)
-        self.m_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.m_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # TODO
+        self.m_device = "cpu"
         print(self.m_device)
         self.m_planesNetwork = simplenet(20).to(self.m_device)
         self.m_datasetHandler = DataSetHandler()
@@ -33,13 +35,14 @@ class NetworkController(INetworkController):
         pass
 
     def TrainEpoch(self):
+        self.m_planesNetwork.train()
         order = np.random.permutation(self.m_datasetLen)
         for startIndex in range(0, self.m_datasetLen, self.m_batchSize):
             self.m_optimizer.zero_grad()
 
             xBatch, yBatch = self.m_datasetHandler.GetTrainingBatch(order[startIndex:startIndex+self.m_batchSize], needAug=self.m_needAug)
-            xBatch.to(self.m_device)
-            yBatch.to(self.m_device)
+            xBatch = xBatch.to(self.m_device)
+            yBatch = yBatch.to(self.m_device)
 
             preds = self.m_planesNetwork.forward(xBatch)
             lossValue = self.m_loss(preds, yBatch)

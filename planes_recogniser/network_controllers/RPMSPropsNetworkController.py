@@ -3,5 +3,5 @@ from network_controllers import INetworkController, NetworkController
 
 class RPMSPropsNetworkController(NetworkController):
     def __init__(self, batchSize, learningRate, needAug=True):
-        super(AugmentationNetworkController, self).__init__(batchSize, learningRate, needAug)
+        super(RPMSPropsNetworkController, self).__init__(batchSize, learningRate, needAug)
         self.m_optimizer = torch.optim.SGD(self.m_planesNetwork.parameters(), lr=self.m_learningRate)
