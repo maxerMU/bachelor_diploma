@@ -2,6 +2,7 @@ planes_dataset/
 planes_recogniser/test_tensors/
 planes_recogniser/train_tensors/
 __pycache__/
+env/
 
 # Python virtual environment
 venv/
