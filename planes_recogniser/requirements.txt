@@ -9,3 +9,8 @@ six==1.16.0
 torch==2.0.0
 torchvision==0.15.1
 typing-extensions==4.5.0
+PyQt5==5.14.0
+
+albumentations
+pandas
+tqdm
