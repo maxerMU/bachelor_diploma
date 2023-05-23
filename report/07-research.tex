@@ -1,1 +1,179 @@
 \chapter{Исследовательский раздел}
+
+\section{Сравнение различных методов оптимизации}
+
+Одной из проблем стохастического градиентного спуска является неизменяемая во время обучения скорость обучения. Постоянная скорость обучения может привести к следующим проблемам: если ее значение будет выбрано слишком низким, то модель будет дольше сходиться и требовать большего числа итераций для достижения оптимального решения, если ее значение будет слишком большим, то модель может расходиться и на каждой итерации проходить мимо глобального минимума.
+
+Для решения этой проблемы нужно использовать адаптивно настраивающуюся скорость обучения. Значение скорости обучения для каждого параметра должно настраиваться адаптивно, исходя из правила, что чем больше значение ошибки, тем больше должна быть скорость обучения. Увеличение скорости обучения при больших значениях ошибки дает возможность перескочить через локальные минимумы, а ее уменьшение при малых значениях не дает модели на каждой итерации перескакивать через глобальный минимум.
+
+Для адаптивного изменения весов модели можно использовать алгоритм RMSProps. Этот алгоритм работает по следующим правилам:
+\begin{itemize}
+	\item на каждой итерации для каждого параметра считается экспоненциальное скользящее среднее градиента с учетом всей истории обучения;
+	\item при помощи полученных значений для каждого параметра вычисляется скорость обучения и производится обновление весов модели.
+\end{itemize}
+
+Экспоненциальное скользящее среднее на очередной итерации высчитывается по формуле \ref{formula:rmsprops_ema}
+\begin{equation}\label{formula:rmsprops_ema}
+E_{\rm{t}} = \beta * g_{\rm{t}}^2 + (1 - \beta) * E_{\rm{t-1}},
+\end{equation}
+
+где $E_{\rm{t}}$ -- новое полученное значение экспоненциального скользящего среднего, $E_{\rm{t-1}}$ -- значение, полученное на предыдущей итерации, $\beta$ -- настраиваемый коэффициент, $g_{\rm{t}}$ -- градиент функции потерь по соответствующему параметру.
+
+После этого веса обновляются с использованием соотношения \ref{formula:rmsprops_w}
+\begin{equation}\label{formula:rmsprops_w}
+w_{\rm{t}} = w_{\rm{t-1}} + \frac{\eta}{\sqrt{E_{\rm{t}}}}g,
+\end{equation}
+где $w_{\rm{t}}$ -- новое полученное значение параметра модели, $w_{\rm{t-1}}$ -- предыдущее значение этого параметра, $\eta$ -- настраиваемый коэффициент, $E_{\rm{t}}$ -- значение экспоненциального скользящего среднего для этого параметра.
+
+На рисунках \ref{img:sgd_rmsprops_training} и \ref{img:sgd_rmsprops_test} представлены графики сравнения точность моделей, обученных с помощью стохастического градиентного спуска и RMSProps, на тренировочной и тестовой выборках соответственно.
+
+%TODO check graphics
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+		\begin{axis}[
+		xlabel = {номер эпохи},
+		ylabel = {точность},
+		legend pos=south east,
+		ymajorgrids=true,
+		width=12cm
+		]   
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/sgd_train.dat};
+		
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {inc/data/rmsprop_train.dat};
+		
+		
+		\addlegendentry{SGD}
+		\addlegendentry{RMSProps}
+		
+		\end{axis}
+		\end{tikzpicture}
+		\caption{Сравнение моделей, обученных на RMPSProp и SGD, на тренировочной выборке}
+		\label{img:sgd_rmsprops_training}
+	\end{center}
+\end{figure}
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+		\begin{axis}[
+		xlabel = {номер эпохи},
+		ylabel = {точность},
+		legend pos=south east,
+		ymajorgrids=true,
+		width=12cm
+		]   
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/sgd_test.dat};
+		
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {inc/data/rmsprop_test.dat};
+		
+		
+		\addlegendentry{SGD}
+		\addlegendentry{RMSProps}
+		
+		\end{axis}
+		\end{tikzpicture}
+		\caption{Сравнение моделей, обученных на RMPSProp и SGD, на тестовой выборке}
+		\label{img:sgd_rmsprops_test}
+	\end{center}
+\end{figure}
+
+Из полученных результатов можно сделать вывод о том, что модель, которая обучалась с использованием градиентного спуска попала в локальный минимум функции потерь и перестала обучаться. 
+
+Модель, которая обучалась с помощью RMSProps показывает лучшую сходимость и большую точность в сравнении с градиентным спуском за счет адаптивного вычисления скорости обучения на каждой итерации.
+
+Для улучшения сходимости модели при адаптивном обновлении скорости обучения можно считать экспоненциальное скользящее среднее не только по квадрату градиента, но и по самому значению и использовать оба полученных значения при подсчете новой скорости обучения на каждой итерации. Такой подход реализован в алгоритме Adam.
+
+Первый и второй моменты высчитываются по формулам \ref{formula:adamema1} и \ref{formula:adamema2} соответственно
+
+\begin{equation}\label{formula:adamema1}
+m_{\rm{t}} = \beta_{\rm{1}} * g_{\rm{t}} + (1 - \beta_{\rm{1}}) * m_{\rm{t-1}},
+\end{equation}
+
+\begin{equation}\label{formula:adamema2}
+v_{\rm{t}} = \beta_{\rm{2}} * g_{\rm{t}}^2 + (1 - \beta_{\rm{2}}) * v_{\rm{t-1}},
+\end{equation}
+
+где $m_{\rm{t}}$ и $v_{\rm{t}}$ -- первый и второй моменты в соответствующий момент времени, $\beta_{\rm{1}}$ и $\beta_{\rm{2}}$ -- настраиваемые коэффициента, $g$ -- градиент функции потерь по соответствующему параметру.
+
+Для учета начальных значений скользящий средний к ним применяется корректировка по формулам \ref{formula:adamcorr1} и \ref{formula:adamcorr2}.
+
+\begin{equation}\label{formula:adamcorr1}
+\hat{m_{\rm{t}}} = \frac{m_{\rm{t}}}{1 - \beta_{\rm{1}}^t},
+\end{equation}
+
+\begin{equation}\label{formula:adamcorr2}
+\hat{v_{\rm{t}}} = \frac{v_{\rm{t}}}{1 - \beta_{\rm{2}}^t},
+\end{equation}
+
+Итоговое обновление весов осуществляется по формуле 
+\ref{formula:adam_w}
+\begin{equation}\label{formula:adam_w}
+w_{\rm{t}} = w_{\rm{t-1}} + \alpha\frac{\hat{m_{\rm{t}}}}{\sqrt{\hat{v_{\rm{t}}} + \epsilon}},
+\end{equation}
+где $w_{\rm{t}}$ -- новое полученной значение параметра модели, $w_{\rm{t-1}}$ -- предыдущее значение этого параметра, $\alpha$ -- скорость обучения, $\epsilon$ -- поправка, защищающая от деления на ноль.
+
+На рисунках \ref{img:adam_rmsprops_training} и \ref{img:adam_rmsprops_test} представлены графики сравнения точность моделей, обученных с помощью Adam и RMSProps, на тренировочной и тестовой выборках соответственно.
+
+%TODO check graphics
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+		\begin{axis}[
+		xlabel = {номер эпохи},
+		ylabel = {точность},
+		legend pos=south east,
+		ymajorgrids=true,
+		width=12cm
+		]   
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/adam_train.dat};
+		
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {inc/data/rmsprop_train.dat};
+		
+		
+		\addlegendentry{ADAM}
+		\addlegendentry{RMSProps}
+		
+		\end{axis}
+		\end{tikzpicture}
+		\caption{Сравнение моделей, обученных на RMPSProp и ADAM, на тренировочной выборке}
+		\label{img:adam_rmsprops_training}
+	\end{center}
+\end{figure}
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+		\begin{axis}[
+		xlabel = {номер эпохи},
+		ylabel = {точность},
+		legend pos=south east,
+		ymajorgrids=true,
+		width=12cm
+		]   
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/adam_test.dat};
+		
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {inc/data/rmsprop_test.dat};
+		
+		
+		\addlegendentry{ADAM}
+		\addlegendentry{RMSProps}
+		
+		\end{axis}
+		\end{tikzpicture}
+		\caption{Сравнение моделей, обученных на RMPSProp и ADAM, на тестовой выборке}
+		\label{img:adam_rmsprops_test}
+	\end{center}
+\end{figure}
+
+Из графиков видно, что Adam сходится быстрее, а модель, обученная с использованием этого оптимизатора, имеет большую точность распознавания на тестовой выборке.
+
+%TODO модификация
+%TODO функция потерь
+%TODO постановка задачи
+%TODO разная скорость обучения
+
+\section{Вывод}
+При сравнении различных оптимизаторов было выяснено, что скорость обучения сети должна адаптивно настраиваться в зависимости от текущего значения ошибки по правилу: чем больше ошибка, тем больше скорость обучения. В ином случае модель может дольше сходиться при малом значении скорости обучения, либо расходиться при больших значениях этого параметра.
+
+Алгоритмы Adam и RMSProps используются для адаптивной настройки скорости обучения. В RMSprops учитывается экспоненциальное скользящее среднее по квадрату градиента для учета истории обучения при обновлении весов модели. В алгоритме Adam также учитывается экспоненциальное скользящее среднее и по первому моменту, что позволяет ему достичь большей сходимости при обучении модели.
+
+Таким образом, при обучении модели для решения поставленной задачи лучше всего подходит оптимизатор Adam за счет большей сходимости и большей точности итоговой обученной модели.
