@@ -1,14 +1,4 @@
-from os import walk, path, listdir
-import fnmatch
-from torchvision import transforms
-from torchvision.utils import save_image
-from PIL import Image
-import torch
-import numpy as np
-import matplotlib.pyplot as plt
-
 DATASET_PATH: str = "../planes_dataset"
-# TODO add base path
 TRAIN_TENSORS_PATH: str = "./train_tensors"
 TEST_TENSORS_PATH: str = "./test_tensors"
 
@@ -84,35 +74,6 @@ class DataSetHandler:
             for i in range(len(yTest)):
                 f.write(f"{yTest[i]}\n")
 
-
-        # batchSize = 50
-        # xTrainTensors = torch.stack(xTrain[:batchSize])
-        # del(xTrain[:batchSize])
-        # while len(xTrain) > 0:
-        #     ram1 = psutil.virtual_memory().percent
-        #     xTrainBatch = torch.stack(xTrain[:batchSize])
-        #     xTrainTensors = torch.cat([xTrainTensors, xTrainBatch], dim=0)
-        #     ram2 = psutil.virtual_memory().percent
-        #     del(xTrain[:batchSize])
-        #     # gc.collect()
-        #     ram3 = psutil.virtual_memory().percent
-        #     print(ram1, ram2, ram3)
-
-        # return xTrainTensors, yTrain
-
-    def _FindAllImages(self, imageNumber: int):
-        images = []
-        classes = []
-        for root, dirnames, filenames in walk(f"{DATASET_PATH}/Parsed/"):
-            for filename in fnmatch.filter(filenames, f"{imageNumber}_*.png"):
-                planeImage = path.join(root, filename)
-                images.append(planeImage)
-                classNameIndex = path.dirname(planeImage).rfind("A")
-                classNumber = int(path.dirname(planeImage)[classNameIndex+1:]) - 1
-                classes.append(classNumber)
-
-        return (images, classes)
-
     def _ConverToTensor(self, imagePath: str) -> torch.Tensor:
         image: Image.Image = Image.open(imagePath)
         transform = transforms.ToTensor()
@@ -132,13 +93,6 @@ class DataSetHandler:
             augTensor2 = transforms.functional.rotate(tensor, -self._AUG_ROTATE_ANGLE)
             augTensor3 = transforms.functional.adjust_brightness(tensor, 1.5)
             augTensor4 = transforms.functional.gaussian_blur(tensor, kernel_size=(5,9), sigma=3)
-            # save_image(tensor, "tensor.png")
-            # save_image(augTensor1, "augTensor1.png")
-            # save_image(augTensor2, "augTensor2.png")
-            # save_image(augTensor3, "augTensor3.png")
-            # save_image(augTensor4, "augTensor4.png")
-            # exit()
-
             xBatchAug += [tensor, augTensor1, augTensor2, augTensor3, augTensor4]
             yBatchAug += [yBatch[i].item()] * 5
         
@@ -147,17 +101,3 @@ class DataSetHandler:
         yBatchAug = np.array(yBatchAug)[order]
 
         return torch.stack(list(xBatchAug)), torch.Tensor(list(yBatchAug)).to(torch.long)
-
- 
-
-if __name__ == "__main__":
-    DataSetHandler().UpdateData()
-    print(DataSetHandler().TrainSize())
-    print(DataSetHandler().TestSize())
-    xTrain, yTrain = DataSetHandler().GetTrainingBatch(range(100))
-    print(xTrain[0], yTrain[0])
-    print(xTrain.size(0), xTrain.size(1), xTrain.size(2), xTrain.size(3))
-
-    im2display = np.transpose(xTrain[0], (1,2,0))
-    plt.imshow(im2display)
-    plt.show()

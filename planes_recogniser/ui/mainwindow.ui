@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>432</width>
-    <height>582</height>
+    <width>1428</width>
+    <height>992</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,70 +15,10 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="title">
-       <string>Использование модели</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="3" column="0">
-        <widget class="QPushButton" name="testImageButton">
-         <property name="text">
-          <string>Определить класс самолета</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="ImageLabel">
-         <property name="minimumSize">
-          <size>
-           <width>96</width>
-           <height>96</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="loadImageButton">
-         <property name="text">
-          <string>Загрузить изображение</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLabel" name="ImageDetectedClassLabel">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="modelsComboBox"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="loadModelButton">
-         <property name="text">
-          <string>Загрузить модель</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="ImageClassLabel">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
-       <string>Обучение модели</string>
+       <string>Обучение модели классификации</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="6" column="0" colspan="3">
@@ -179,6 +119,125 @@
       </layout>
      </widget>
     </item>
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="title">
+       <string>Классификация</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="5" column="2">
+        <widget class="QLabel" name="ImageDetectedClassLabel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="loadImageButton">
+         <property name="text">
+          <string>Загрузить изображение</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="ImageLabel">
+         <property name="minimumSize">
+          <size>
+           <width>96</width>
+           <height>96</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QComboBox" name="modelsComboBox"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="loadModelButton">
+         <property name="text">
+          <string>Загрузить модель</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QPushButton" name="testImageButton">
+         <property name="text">
+          <string>Определить класс самолета</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="ImageClassLabel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="2">
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="title">
+       <string>Распознавание</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="1" column="1">
+        <widget class="QLabel" name="detectPlanesImageLabel">
+         <property name="minimumSize">
+          <size>
+           <width>800</width>
+           <height>800</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="loadDetectionButton">
+         <property name="text">
+          <string>Загрузить модель</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="detectionModelsComboBox"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="detectionLoadImageButton">
+         <property name="text">
+          <string>Загрузить изображение</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="detectPlanesButton">
+         <property name="text">
+          <string>Распознать самолеты</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -186,7 +245,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>432</width>
+     <width>1428</width>
      <height>22</height>
     </rect>
    </property>

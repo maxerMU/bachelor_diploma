@@ -32,7 +32,7 @@ class INetworkController(ABC):
     def GetAllModels(self):
         pass
 
-    def TrainNetwork(self, epochs: int):
+    def TrainNetwork(self, epochs: int, tempModelPath = None):
         self.TrainPrepare()
 
         trainAccs, testAccs = [], []
@@ -40,6 +40,8 @@ class INetworkController(ABC):
             self.TrainEpoch()
             print(f"================================== {epoch} ================================")
             trainAcc, testAcc = self.LogTraining()
+            if (tempModelPath):
+                self.SaveModel(tempModelPath)
             trainAccs.append(trainAcc)
             testAccs.append(testAcc)
             if len(testAccs) >= 3:

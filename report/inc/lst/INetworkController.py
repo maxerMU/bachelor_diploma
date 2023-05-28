@@ -1,37 +1,4 @@
-from abc import ABC, abstractmethod
-import numpy as np
-from dataset_handler.dataset_handler import DataSetHandler
-import gc
-
-class INetworkController(ABC):
-    @abstractmethod
-    def TrainPrepare(self):
-        pass
-
-    @abstractmethod
-    def TrainEpoch(self):
-        pass
-    
-    @abstractmethod
-    def GetResults(self, xBatch):
-        pass
-
-    @abstractmethod
-    def GetResult(self, imagePath):
-        pass
-
-    @abstractmethod
-    def SaveModel(self, modelPath):
-        pass
-
-    @abstractmethod
-    def LoadModel(self, modelPath):
-        pass
-
-    @abstractmethod
-    def GetAllModels(self):
-        pass
-
+class INetworkController:
     def TrainNetwork(self, epochs: int):
         self.TrainPrepare()
 
@@ -43,9 +10,6 @@ class INetworkController(ABC):
             trainAccs.append(trainAcc)
             testAccs.append(testAcc)
             if len(testAccs) >= 3:
-                # testAccsVar = np.var(testAccs[-3:])
-                # print(f"testAccsVar == {testAccsVar}")
-                # if testAccsVar < 0.05:
                 if testAccs[-1] < testAccs[-2] and testAccs[-1] < testAccs[-3]:
                     break
 
@@ -55,8 +19,8 @@ class INetworkController(ABC):
         predsTest = []
         yBatchTest = []
         for startTestBatch in range(0, datasetHandler.TestSize(), 500):
-            # testOrder = np.random.permutation(datasetHandler.TestSize())[:500]
-            xBatch, yBatch = datasetHandler.GetTestBatch(list(range(startTestBatch, min(startTestBatch + 500, datasetHandler.TestSize()))))
+            xBatch, yBatch = datasetHandler.GetTestBatch(list(
+                range(startTestBatch, min(startTestBatch + 500, datasetHandler.TestSize()))))
             preds = self.GetResults(xBatch)
             predsTest = predsTest + preds.tolist()
             yBatchTest = yBatchTest + yBatch.tolist()
@@ -65,8 +29,8 @@ class INetworkController(ABC):
         predsTrain = []
         yBatchTrain = []
         for startTrainBatch in range(0, datasetHandler.TrainSize(), 500):
-            # xBatchTrain, yBatchTrain = datasetHandler.GetTrainingBatch(np.random.permutation(datasetHandler.TrainSize())[:500])
-            xBatch, yBatch = datasetHandler.GetTrainingBatch(list(range(startTrainBatch, min(startTrainBatch + 500, datasetHandler.TrainSize()))))
+            xBatch, yBatch = datasetHandler.GetTrainingBatch(list(range(
+                startTrainBatch, min(startTrainBatch + 500, datasetHandler.TrainSize()))))
             preds = self.GetResults(xBatch)
             predsTrain = predsTrain + preds.tolist()
             yBatchTrain = yBatchTrain + yBatch.tolist()

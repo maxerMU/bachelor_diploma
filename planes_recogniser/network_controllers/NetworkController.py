@@ -49,13 +49,15 @@ class NetworkController(INetworkController):
             lossValue = self.m_loss(preds, yBatch)
 
             # print(preds.argmax(dim=1))
-            # print(lossValue)
+            if startIndex + self.m_batchSize >= self.m_datasetLen:
+                print(f"loss == {lossValue}")
             lossValue.backward()
 
             self.m_optimizer.step()
     
     def GetResults(self, xBatch):
         self.m_planesNetwork.eval()
+        xBatch = xBatch.to(self.m_device)
         results = self.m_planesNetwork.forward(xBatch).argmax(dim=1)
         self.m_planesNetwork.train()
 
@@ -68,25 +70,6 @@ class NetworkController(INetworkController):
         # remove alpha channel
         if (tensor.size(0) == 4):
             tensor = tensor[:-1]
-        
-        # # TODO constant
-        # stride = 5
-        # i = 0
-
-        # while i < len(tensor[0]) + 96:
-        #     j = 0
-        #     while j < len(tensor[0][0]) + 96:
-        #         sector = tensor[:, i:i+96, j:j+96]
-
-        #         im2display = np.transpose(sector, (1,2,0))
-        #         plt.imshow(im2display)
-        #         plt.show()
-        #         t = torch.stack([sector])
-        #         self.GetResults(t)
-
-
-        #         j += stride
-        #     i += stride
         
         t = torch.stack([tensor])
         return self.GetResults(t)[0]

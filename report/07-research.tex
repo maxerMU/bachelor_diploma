@@ -1,6 +1,6 @@
 \chapter{Исследовательский раздел}
 
-\section{Сравнение различных методов оптимизации}
+\section{Сравнение методов оптимизации}
 
 Одной из проблем стохастического градиентного спуска является неизменяемая во время обучения скорость обучения. Постоянная скорость обучения может привести к следующим проблемам: если ее значение будет выбрано слишком низким, то модель будет дольше сходиться и требовать большего числа итераций для достижения оптимального решения, если ее значение будет слишком большим, то модель может расходиться и на каждой итерации проходить мимо глобального минимума.
 
@@ -21,26 +21,49 @@ E_{\rm{t}} = \beta * g_{\rm{t}}^2 + (1 - \beta) * E_{\rm{t-1}},
 
 После этого веса обновляются с использованием соотношения \ref{formula:rmsprops_w}
 \begin{equation}\label{formula:rmsprops_w}
-w_{\rm{t}} = w_{\rm{t-1}} + \frac{\eta}{\sqrt{E_{\rm{t}}}}g,
+w_{\rm{t}} = w_{\rm{t-1}} - \frac{\eta}{\sqrt{E_{\rm{t}}}}g,
 \end{equation}
-где $w_{\rm{t}}$ -- новое полученное значение параметра модели, $w_{\rm{t-1}}$ -- предыдущее значение этого параметра, $\eta$ -- настраиваемый коэффициент, $E_{\rm{t}}$ -- значение экспоненциального скользящего среднего для этого параметра.
+где $w_{\rm{t}}$ -- новое полученное значение параметра модели, $w_{\rm{t-1}}$ -- предыдущее значение этого параметра, $\eta$ -- скорость обучения, $E_{\rm{t}}$ -- значение экспоненциального скользящего среднего для этого параметра.
 
-На рисунках \ref{img:sgd_rmsprops_training} и \ref{img:sgd_rmsprops_test} представлены графики сравнения точность моделей, обученных с помощью стохастического градиентного спуска и RMSProps, на тренировочной и тестовой выборках соответственно.
+На рисунке \ref{img:sgd_rmsprops_test} представлены графики сравнения значения функции потерь моделей, обучаемых с помощью стохастического градиентного спуска и RMSProps, в зависимости от номера эпохи обучения.
 
-%TODO check graphics
+%\begin{figure}[H]
+%	\begin{center}
+%		\begin{tikzpicture}
+%		\begin{axis}[
+%		xlabel = {номер эпохи},
+%		ylabel = {точность},
+%		legend pos=south east,
+%		ymajorgrids=true,
+%		width=12cm
+%		]   
+%		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/sgd_train.dat};
+		
+%		\addplot[color=red, mark=*] table[x index=0, y index=1] {inc/data/rmsprop_train.dat};
+		
+		
+%		\addlegendentry{SGD}
+%		\addlegendentry{RMSProps}
+		
+%		\end{axis}
+%		\end{tikzpicture}
+%		\caption{Сравнение моделей, обученных на RMPSProp и SGD, на тренировочной выборке}
+%		\label{img:sgd_rmsprops_training}
+%	\end{center}
+%\end{figure}
 \begin{figure}[H]
 	\begin{center}
 		\begin{tikzpicture}
 		\begin{axis}[
 		xlabel = {номер эпохи},
-		ylabel = {точность},
-		legend pos=south east,
+		ylabel = {значение функции потерь},
+		legend pos=south west,
 		ymajorgrids=true,
 		width=12cm
 		]   
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/sgd_train.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/loss_sgd.dat};
 		
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {inc/data/rmsprop_train.dat};
+		\addplot[color=red, mark=*] table[x index=0, y index=1] {inc/data/loss_rms.dat};
 		
 		
 		\addlegendentry{SGD}
@@ -48,38 +71,16 @@ w_{\rm{t}} = w_{\rm{t-1}} + \frac{\eta}{\sqrt{E_{\rm{t}}}}g,
 		
 		\end{axis}
 		\end{tikzpicture}
-		\caption{Сравнение моделей, обученных на RMPSProp и SGD, на тренировочной выборке}
-		\label{img:sgd_rmsprops_training}
-	\end{center}
-\end{figure}
-\begin{figure}[H]
-	\begin{center}
-		\begin{tikzpicture}
-		\begin{axis}[
-		xlabel = {номер эпохи},
-		ylabel = {точность},
-		legend pos=south east,
-		ymajorgrids=true,
-		width=12cm
-		]   
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/sgd_test.dat};
-		
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {inc/data/rmsprop_test.dat};
-		
-		
-		\addlegendentry{SGD}
-		\addlegendentry{RMSProps}
-		
-		\end{axis}
-		\end{tikzpicture}
-		\caption{Сравнение моделей, обученных на RMPSProp и SGD, на тестовой выборке}
+		\caption{Сравнение функций потерь моделей, обученных на RMPSProp и SGD}
 		\label{img:sgd_rmsprops_test}
 	\end{center}
 \end{figure}
 
 Из полученных результатов можно сделать вывод о том, что модель, которая обучалась с использованием градиентного спуска попала в локальный минимум функции потерь и перестала обучаться. 
 
-Модель, которая обучалась с помощью RMSProps показывает лучшую сходимость и большую точность в сравнении с градиентным спуском за счет адаптивного вычисления скорости обучения на каждой итерации.
+Модель, которая обучалась с помощью RMSProps за счет адаптивного вычисления скорости обучения на каждой итерации не попала в этот локальный минимум и продолжала обучаться.
+
+Итоговая точность моделей, обучаемых с помощью градиентного спуска и RMSProp, на тестовой выборке составила 21 процент и 39 процентов соответственно.
 
 Для улучшения сходимости модели при адаптивном обновлении скорости обучения можно считать экспоненциальное скользящее среднее не только по квадрату градиента, но и по самому значению и использовать оба полученных значения при подсчете новой скорости обучения на каждой итерации. Такой подход реализован в алгоритме Adam.
 
@@ -95,7 +96,7 @@ v_{\rm{t}} = \beta_{\rm{2}} * g_{\rm{t}}^2 + (1 - \beta_{\rm{2}}) * v_{\rm{t-1}}
 
 где $m_{\rm{t}}$ и $v_{\rm{t}}$ -- первый и второй моменты в соответствующий момент времени, $\beta_{\rm{1}}$ и $\beta_{\rm{2}}$ -- настраиваемые коэффициента, $g$ -- градиент функции потерь по соответствующему параметру.
 
-Для учета начальных значений скользящий средний к ним применяется корректировка по формулам \ref{formula:adamcorr1} и \ref{formula:adamcorr2}.
+Для увеличения влияния истинных значений градиента на начальных этапах к моментам применяется корректировка по формулам \ref{formula:adamcorr1} и \ref{formula:adamcorr2}.
 
 \begin{equation}\label{formula:adamcorr1}
 \hat{m_{\rm{t}}} = \frac{m_{\rm{t}}}{1 - \beta_{\rm{1}}^t},
@@ -108,72 +109,128 @@ v_{\rm{t}} = \beta_{\rm{2}} * g_{\rm{t}}^2 + (1 - \beta_{\rm{2}}) * v_{\rm{t-1}}
 Итоговое обновление весов осуществляется по формуле 
 \ref{formula:adam_w}
 \begin{equation}\label{formula:adam_w}
-w_{\rm{t}} = w_{\rm{t-1}} + \alpha\frac{\hat{m_{\rm{t}}}}{\sqrt{\hat{v_{\rm{t}}} + \epsilon}},
+w_{\rm{t}} = w_{\rm{t-1}} - \eta\frac{\hat{m_{\rm{t}}}}{\sqrt{\hat{v_{\rm{t}}}} + \epsilon},
 \end{equation}
-где $w_{\rm{t}}$ -- новое полученной значение параметра модели, $w_{\rm{t-1}}$ -- предыдущее значение этого параметра, $\alpha$ -- скорость обучения, $\epsilon$ -- поправка, защищающая от деления на ноль.
+где $w_{\rm{t}}$ -- новое полученной значение параметра модели, $w_{\rm{t-1}}$ -- предыдущее значение этого параметра, $\eta$ -- скорость обучения, $\epsilon$ -- поправка, защищающая от деления на ноль.
 
-На рисунках \ref{img:adam_rmsprops_training} и \ref{img:adam_rmsprops_test} представлены графики сравнения точность моделей, обученных с помощью Adam и RMSProps, на тренировочной и тестовой выборках соответственно.
+На рисунках \ref{img:adam_rmsprops_test} представлены графики функции потерь моделей, обученных с помощью Adam и RMSProps, в зависимости от номера эпохи обучения.
 
 %TODO check graphics
+%\begin{figure}[H]
+%	\begin{center}
+%		\begin{tikzpicture}
+%		\begin{axis}[
+%		xlabel = {номер эпохи},
+%		ylabel = {точность},
+%		legend pos=south east,
+%		ymajorgrids=true,
+%		width=12cm
+%		]   
+%		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/adam_train.dat};
+%		
+%		\addplot[color=red, mark=*] table[x index=0, y index=1] {inc/data/rmsprop_train.dat};
+%		
+%		
+%		\addlegendentry{ADAM}
+%		\addlegendentry{RMSProps}
+%		
+%		\end{axis}
+%		\end{tikzpicture}
+%		\caption{Сравнение моделей, обученных на RMPSProp и ADAM, на тренировочной выборке}
+%		\label{img:adam_rmsprops_training}
+%	\end{center}
+%\end{figure}
+%\begin{figure}[H]
+%	\begin{center}
+%		\begin{tikzpicture}
+%		\begin{axis}[
+%		xlabel = {номер эпохи},
+%		ylabel = {точность},
+%		legend pos=south east,
+%		ymajorgrids=true,
+%		width=12cm
+%		]   
+%		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/adam_test.dat};
+%		
+%		\addplot[color=red, mark=*] table[x index=0, y index=1] {inc/data/rmsprop_test.dat};
+%		
+%		
+%		\addlegendentry{ADAM}
+%		\addlegendentry{RMSProps}
+%		
+%		\end{axis}
+%		\end{tikzpicture}
+%		\caption{Сравнение моделей, обученных на RMPSProp и ADAM, на тестовой выборке}
+%		\label{img:adam_rmsprops_test}
+%	\end{center}
+%\end{figure}
 \begin{figure}[H]
 	\begin{center}
 		\begin{tikzpicture}
 		\begin{axis}[
 		xlabel = {номер эпохи},
-		ylabel = {точность},
-		legend pos=south east,
+		ylabel = {значение функции потерь},
+		legend pos=south west,
 		ymajorgrids=true,
 		width=12cm
 		]   
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/adam_train.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/loss_adam.dat};
 		
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {inc/data/rmsprop_train.dat};
+		\addplot[color=red, mark=*] table[x index=0, y index=1] {inc/data/loss_rms.dat};
 		
 		
-		\addlegendentry{ADAM}
+		\addlegendentry{Adam}
 		\addlegendentry{RMSProps}
 		
 		\end{axis}
 		\end{tikzpicture}
-		\caption{Сравнение моделей, обученных на RMPSProp и ADAM, на тренировочной выборке}
-		\label{img:adam_rmsprops_training}
-	\end{center}
-\end{figure}
-\begin{figure}[H]
-	\begin{center}
-		\begin{tikzpicture}
-		\begin{axis}[
-		xlabel = {номер эпохи},
-		ylabel = {точность},
-		legend pos=south east,
-		ymajorgrids=true,
-		width=12cm
-		]   
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/adam_test.dat};
-		
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {inc/data/rmsprop_test.dat};
-		
-		
-		\addlegendentry{ADAM}
-		\addlegendentry{RMSProps}
-		
-		\end{axis}
-		\end{tikzpicture}
-		\caption{Сравнение моделей, обученных на RMPSProp и ADAM, на тестовой выборке}
+		\caption{Сравнение функций потерь моделей, обученных на RMPSProp и Adam}
 		\label{img:adam_rmsprops_test}
 	\end{center}
 \end{figure}
 
-Из графиков видно, что Adam сходится быстрее, а модель, обученная с использованием этого оптимизатора, имеет большую точность распознавания на тестовой выборке.
+Из графиков видно, что функция потерь, которая оптимизировалась с помощью алгоритма Adam сходится быстрее и не попадает в локальные минимумы. Итоговая точность модели, которая обучалась с помощью алгоритма Adam, составила 84 процента на тестовой выборке.
 
-%TODO модификация
-%TODO функция потерь
-%TODO постановка задачи
-%TODO разная скорость обучения
+\section{Модификация модели классификации}
+
+После каждого из слоев пуллинга в архитектуре модели классификации был добавлен слой дропаут, который с некоторой заданной вероятностью $p$ исключает нейрон из обучения на одну итерацию. Такой прием приводит к тому, что модель обучается на разных комбинациях активных нейронов, что уменьшает вероятность переобучения модели.
+
+Графики зависимости точности модели на тестовой выборке от номера эпохи обучения с использованием dropout и без приведены на рисунке \ref{img:dropout_test}.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+		\begin{axis}[
+		xlabel = {номер эпохи},
+		ylabel = {точность},
+		legend pos=south east,
+		ymajorgrids=true,
+		width=12cm
+		]   
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {inc/data/model_test.dat};
+		
+		\addplot[color=red, mark=*] table[x index=0, y index=1] {inc/data/adam_test_no_drop.dat};
+		
+		
+		\addlegendentry{с dropout}
+		\addlegendentry{без dropout}
+		
+		\end{axis}
+		\end{tikzpicture}
+		\caption{Сравнение моделей, обученных с использованием dropout и без, на тестовой выборке}
+		\label{img:dropout_test}
+	\end{center}
+\end{figure}
+
+Из графиков видно, что после 6 эпохи обучения, модель которая обучалась без использования dropout стала обучаться на шум на тренировочной выборке, в связи с чем точность модели на тестовой выборке начала падать.
+
+Помимо добавления слоев дропаута из архитектуры сети был убран один из сверточных слоев. Точность модели на тестовой выборке после этого осталась прежней, а число обучаемых параметров было уменьшено на 600 тысяч. Уменьшение число обучаемых параметров увеличивает скорость обучения сети, снижает ограничения на вычислительные ресурсы, а также уменьшает вероятность переобучения модели.
 
 \section{Вывод}
+В архитектуру нейронной сети были внесены изменения, которые увеличиваю скорость обучения модели, снижают ограничения на вычислительные ресурсы, а также не дают модели переобучаться.
+
 При сравнении различных оптимизаторов было выяснено, что скорость обучения сети должна адаптивно настраиваться в зависимости от текущего значения ошибки по правилу: чем больше ошибка, тем больше скорость обучения. В ином случае модель может дольше сходиться при малом значении скорости обучения, либо расходиться при больших значениях этого параметра.
 
 Алгоритмы Adam и RMSProps используются для адаптивной настройки скорости обучения. В RMSprops учитывается экспоненциальное скользящее среднее по квадрату градиента для учета истории обучения при обновлении весов модели. В алгоритме Adam также учитывается экспоненциальное скользящее среднее и по первому моменту, что позволяет ему достичь большей сходимости при обучении модели.
 
-Таким образом, при обучении модели для решения поставленной задачи лучше всего подходит оптимизатор Adam за счет большей сходимости и большей точности итоговой обученной модели.
+Таким образом, разработанный метод показывает наибольшую точность при обучении моделей с помощью алгоритма Adam.

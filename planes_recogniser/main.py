@@ -107,7 +107,7 @@ class Window(QMainWindow, Ui_MainWindow):
         batchSize = self.BatchSizeSpinBox.value()
         epochs = self.epochsSpinBox.value()
         alg = self.learningAlgComboBox.currentText()
-        needAug = self.AugRadioButton.isEnabled()
+        needAug = self.AugRadioButton.isChecked()
 
         networkController = self.m_algsControllersMap[alg](batchSize, lr, needAug)
 
@@ -188,7 +188,12 @@ if __name__ == "__main__":
     # controller = AugmentationNetworkController(100, 1e-3)
     # train(controller)
     # test(controller)
-    app = QApplication(sys.argv)
-    win = Window()
-    win.show()
-    sys.exit(app.exec())
+    if "-no-ui" in sys.argv:
+        controller = AugmentationNetworkController(50, 1e-5)
+        if "-train" in sys.argv:
+            controller.TrainNetwork(20, "augadammodeltmp.pt")
+    else:
+        app = QApplication(sys.argv)
+        win = Window()
+        win.show()
+        sys.exit(app.exec())
