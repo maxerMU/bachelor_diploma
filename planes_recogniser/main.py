@@ -4,7 +4,7 @@ import re
 from typing import List
 
 from PyQt5.QtWidgets import (
-    QApplication, QDialog, QMainWindow, QMessageBox, QFileDialog
+    QApplication, QDialog, QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem
 )
 from PyQt5 import QtGui
 from PyQt5 import QtCore
@@ -17,10 +17,6 @@ from network_controllers import *
 from planes_detector import (
     IDetectionNetworkController, YoloDetectionNetworkController, YoloDetectionNetworkControllerM, BBox
 )
-
-# TODO add errors check
-# TODO check image open cancel
-# TODO add conf tresh in ui
 
 class BBoxWithClass(BBox):
     def __init__(self, bbox: BBox, planeClass):
@@ -45,8 +41,10 @@ class Window(QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
         self._ConnectSignalsSlots()
-        self._SetupTrainAlgsMenu()
+        # self._SetupTrainAlgsMenu()
         self._SetupModelsMenu()
+
+        self.tableWidget.horizontalHeader
 
     def _SetupTrainAlgsMenu(self):
         for alg in self.m_algsControllersMap:
@@ -57,7 +55,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def _ConnectSignalsSlots(self):
         self.loadModelButton.clicked.connect(self._OnLoadModel)
         self.loadImageButton.clicked.connect(self._OnLoadImageClassification)
-        self.trainModelButton.clicked.connect(self._OnTrainModel)
+        # self.trainModelButton.clicked.connect(self._OnTrainModel)
         self.testImageButton.clicked.connect(self._OnTestImage)
 
         self.loadDetectionButton.clicked.connect(self._OnLoadDetector)
@@ -98,8 +96,14 @@ class Window(QMainWindow, Ui_MainWindow):
 
         if len(self.m_imageDetectionPath) == 0:
             return
+        
+        pixmap = QtGui.QPixmap(self.m_imageDetectionPath)
+        if pixmap.width() != 800 or pixmap.height() != 800:
+            self._ErrorBox("Изображение не соотвествует ограничениям по размеру (800х800)")
+            self.m_imageDetectionPath = ""
+            return
 
-        self.detectPlanesImageLabel.setPixmap(QtGui.QPixmap(self.m_imageDetectionPath))
+        self.detectPlanesImageLabel.setPixmap(pixmap)
 
     def _OnTrainModel(self):
         modelName = self.lineEdit.text()
@@ -116,17 +120,30 @@ class Window(QMainWindow, Ui_MainWindow):
         self.m_networkController.SaveModel(modelName)
 
     def _OnTestImage(self):
+        if len(self.m_imageClassificationPath) == 0:
+            self._ErrorBox("Необходимо загрузить изображение")
+            return
+
         planeModel = self.m_networkController.GetResult(self.m_imageClassificationPath).long() + 1
         self.ImageDetectedClassLabel.setText(f"Распознан самолет А{planeModel}")
     
     def _OnTestDetection(self):
+        self.tableWidget.clearContents()
+        if len(self.m_imageDetectionPath) == 0:
+            self._ErrorBox("Необходимо загрузить изображение")
+            return
+
         bboxes = self.m_planesDetector.GetBBoxes(self.m_imageDetectionPath)
+        self.tableWidget.setRowCount(len(bboxes))
         bboxesWithClasses = []
 
         TMP_IMAGE_PATH = "tmp.png"
-        for bbox in bboxes:
+        for i, bbox in enumerate(bboxes):
             self._CropImage(self.m_imageDetectionPath, bbox, outputSize=96, outputPath=TMP_IMAGE_PATH)
             planeModel = self.m_networkController.GetResult(TMP_IMAGE_PATH).long() + 1
+            item = QTableWidgetItem(f"A{planeModel}")
+            item.setTextAlignment(0x0004 | 0x0080)
+            self.tableWidget.setItem(i, 0, item)
             bboxesWithClasses.append(BBoxWithClass(bbox, planeModel))
 
 
@@ -171,6 +188,13 @@ class Window(QMainWindow, Ui_MainWindow):
         painter.end()
         
         self.detectPlanesImageLabel.setPixmap(pixmap)
+    
+    def _ErrorBox(self, text):
+        box = QMessageBox()
+        box.setIcon(QMessageBox.Critical)
+        box.setText(text)
+        box.setWindowTitle("Ошибка")
+        box.exec_()
 
 
 
