@@ -28,7 +28,6 @@ class NetworkController(INetworkController):
         self.m_needAug = needAug
 
         self.m_loss = torch.nn.CrossEntropyLoss()
-        # TODO change on ADAM
         self.m_optimizer = torch.optim.Adam(self.m_planesNetwork.parameters(), lr=self.m_learningRate)
         self.m_datasetLen = self.m_datasetHandler.TrainSize()
     

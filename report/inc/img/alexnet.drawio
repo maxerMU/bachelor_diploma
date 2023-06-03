@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2023-04-28T21:29:39.995Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.1 Chrome/112.0.5615.87 Electron/24.1.2 Safari/537.36" etag="avEiR7NgIXFWejHpg1RF" version="21.2.1" type="device">
+<mxfile host="Electron" modified="2023-05-31T10:50:00.520Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="-eiRun9NMFjbF2-w8iis" version="21.2.8" type="device">
   <diagram name="Page-1" id="q8TuoFmewHxLirPJy0WY">
     <mxGraphModel dx="1674" dy="843" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -22,7 +22,7 @@
         <mxCell id="jNvd0gnOHT0eZVnp785t-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jNvd0gnOHT0eZVnp785t-6" target="jNvd0gnOHT0eZVnp785t-4" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="jNvd0gnOHT0eZVnp785t-6" value="3x3 MaxPoll, шаг 2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="jNvd0gnOHT0eZVnp785t-6" value="3x3 MaxPool, шаг 2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="510" y="290" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="jNvd0gnOHT0eZVnp785t-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jNvd0gnOHT0eZVnp785t-8" target="jNvd0gnOHT0eZVnp785t-6" edge="1">
@@ -46,7 +46,7 @@
         <mxCell id="jNvd0gnOHT0eZVnp785t-13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jNvd0gnOHT0eZVnp785t-14" target="jNvd0gnOHT0eZVnp785t-12" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="jNvd0gnOHT0eZVnp785t-14" value="3x3 MaxPoll, шаг 2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="jNvd0gnOHT0eZVnp785t-14" value="3x3 MaxPool, шаг 2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="270" y="110" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="jNvd0gnOHT0eZVnp785t-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jNvd0gnOHT0eZVnp785t-16" target="jNvd0gnOHT0eZVnp785t-14" edge="1">
@@ -58,7 +58,7 @@
         <mxCell id="jNvd0gnOHT0eZVnp785t-17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jNvd0gnOHT0eZVnp785t-18" target="jNvd0gnOHT0eZVnp785t-16" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="jNvd0gnOHT0eZVnp785t-18" value="3x3 MaxPoll, шаг 2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="jNvd0gnOHT0eZVnp785t-18" value="3x3 MaxPool, шаг 2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="270" y="290" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="jNvd0gnOHT0eZVnp785t-19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="jNvd0gnOHT0eZVnp785t-20" target="jNvd0gnOHT0eZVnp785t-18" edge="1">
